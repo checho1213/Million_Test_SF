@@ -12,22 +12,35 @@ public sealed class PropertyRepository : IPropertyRepository
 
     #region implement
     public async Task<IEnumerable<Property>> GetFilteredAsync(string name, string address, decimal? minPrice, decimal? maxPrice)
-    {
-        var filter = Builders<Property>.Filter.Empty;
+    {        
+        var builder = Builders<Property>.Filter;
+        var filter = builder.Empty;
 
         if (!string.IsNullOrEmpty(name))
-            filter &= Builders<Property>.Filter.Regex(p => p.Name, new MongoDB.Bson.BsonRegularExpression(name, "i"));
+            filter &= builder.Regex(p => p.Name, new BsonRegularExpression(name, "i"));
 
         if (!string.IsNullOrEmpty(address))
-            filter &= Builders<Property>.Filter.Regex(p => p.Address, new MongoDB.Bson.BsonRegularExpression(address, "i"));
+            filter &= builder.Regex(p => p.Address, new BsonRegularExpression(address, "i"));
 
         if (minPrice.HasValue)
-            filter &= Builders<Property>.Filter.Gte(p => p.Price, minPrice);
+            filter &= builder.Gte(p => p.Price, minPrice.Value);
 
         if (maxPrice.HasValue)
-            filter &= Builders<Property>.Filter.Lte(p => p.Price, maxPrice);
+            filter &= builder.Lte(p => p.Price, maxPrice.Value);
 
-        return await _context.Properties.Find(filter).ToListAsync();
+        var result = await _context.Properties
+            .Aggregate()
+            .Match(filter)
+            .Lookup<Property, Owner, Property>(
+                foreignCollection: _context.Owners,
+                localField: p => p.IdOwner,
+                foreignField: o => o.IdOwner,
+                @as: p => p.Owner)
+            .Unwind(p => p.Owner, new AggregateUnwindOptions<Property> { PreserveNullAndEmptyArrays = true })
+            .ToListAsync();
+
+        return result;
+
     }
     #endregion
 }

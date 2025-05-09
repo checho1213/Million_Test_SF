@@ -9,8 +9,8 @@ public sealed class MillionMongoContext
         _database = client.GetDatabase(configuration["Mongo:Database"]);
     }
 
-    public IMongoCollection<Property> Properties => _database.GetCollection<Property>("Properties");
+    public IMongoCollection<Property> Properties => _database.GetCollection<Property>("properties");
     public IMongoCollection<PropertyImages> PropertyImages => _database.GetCollection<PropertyImages>("PropertyImages");
     public IMongoCollection<PropertyTrace> PropertyTraces => _database.GetCollection<PropertyTrace>("PropertyTrace");
-    public IMongoCollection<Owner> Owners => _database.GetCollection<Owner>("Owners");
+    public IMongoCollection<Owner> Owners => _database.GetCollection<Owner>("owners");
 }

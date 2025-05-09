@@ -17,7 +17,9 @@ public class GetPropertiesQueryHandler : IRequestHandler<GetPropertiesQuery, Lis
             throw new NotFoundException(nameof(Property), request.Name);
         return properties.Select(p => new PropertyDto
         {
-            IdOwner = p.IdOwner,
+            _id = p._id.ToString(),
+            IdProperty = p.IdProperty,
+            Owner = new OwnerDto() { IdOwner = p.Owner.IdOwner, Name = p.Owner.Name },
             Name = p.Name,
             Address = p.Address,
             Price = p.Price,
