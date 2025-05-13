@@ -15,4 +15,7 @@ public sealed class Property
     [BsonIgnoreIfNull]
     public Owner Owner { get; set; }
 
+    [BsonIgnoreIfNull]
+    public List<PropertyImages> Images { get; set; } = new();
+
 }

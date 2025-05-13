@@ -10,7 +10,7 @@ public sealed class MillionMongoContext
     }
 
     public IMongoCollection<Property> Properties => _database.GetCollection<Property>("properties");
-    public IMongoCollection<PropertyImages> PropertyImages => _database.GetCollection<PropertyImages>("PropertyImages");
+    public IMongoCollection<PropertyImages> PropertyImages => _database.GetCollection<PropertyImages>("propertyImages");
     public IMongoCollection<PropertyTrace> PropertyTraces => _database.GetCollection<PropertyTrace>("PropertyTrace");
     public IMongoCollection<Owner> Owners => _database.GetCollection<Owner>("owners");
 }

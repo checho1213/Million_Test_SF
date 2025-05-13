@@ -12,13 +12,13 @@ public sealed class PropertyRepository : IPropertyRepository
 
     #region implement
     public async Task<IEnumerable<Property>> GetFilteredAsync(string name, string address, string? owner, decimal? maxPrice)
-    {        
+    {
         var builder = Builders<Property>.Filter;
         var filter = builder.Empty;
-        
+
         if (!string.IsNullOrEmpty(name))
             filter &= builder.Regex(p => p.Name, new BsonRegularExpression(name, "i"));
-        
+
         if (!string.IsNullOrEmpty(address))
             filter &= builder.Regex(p => p.Address, new BsonRegularExpression(address, "i"));
 
@@ -50,7 +50,12 @@ public sealed class PropertyRepository : IPropertyRepository
                 foreignField: o => o.IdOwner,
                 @as: p => p.Owner)
             .Unwind(p => p.Owner, new AggregateUnwindOptions<Property> { PreserveNullAndEmptyArrays = true })
-            .ToListAsync();
+            .Lookup<Property, PropertyImages, Property>(
+    foreignCollection: _context.PropertyImages,
+    localField: p => p.IdProperty,
+    foreignField: pi => pi.IdProperty,
+    @as: p => p.Images)
+    .ToListAsync();
 
         return result;
 
