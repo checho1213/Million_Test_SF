@@ -5,7 +5,7 @@ using Million.Application.Dto;
 namespace Million.Api.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class PropertiesController : ControllerBase
 {
     private readonly IMediator _mediator;

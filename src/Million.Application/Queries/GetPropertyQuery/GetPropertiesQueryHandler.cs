@@ -12,7 +12,7 @@ public class GetPropertiesQueryHandler : IRequestHandler<GetPropertiesQuery, Lis
 
     public async Task<List<PropertyDto>> Handle(GetPropertiesQuery request, CancellationToken cancellationToken)
     {
-        var properties = await _repository.GetFilteredAsync(request.Name, request.Address, request.MinPrice, request.MaxPrice);
+        var properties = await _repository.GetFilteredAsync(request.Name, request.Address, request.Owner, request.MaxPrice);
         if (properties == null)
             throw new NotFoundException(nameof(Property), request.Name);
         return properties.Select(p => new PropertyDto

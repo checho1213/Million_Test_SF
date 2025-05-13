@@ -4,6 +4,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin()  // Permite solicitudes desde cualquier origen
+              .AllowAnyHeader()  // Permite cualquier encabezado
+              .AllowAnyMethod(); // Permite cualquier método HTTP
+    });
+});
+
+
+
 // Add services
 builder.Services.AddControllers();
 
@@ -25,7 +37,7 @@ var app = builder.Build();
 
 //Middleware
 app.UseMiddleware<ExceptionMiddleware>();
-
+app.UseCors("AllowAllOrigins");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

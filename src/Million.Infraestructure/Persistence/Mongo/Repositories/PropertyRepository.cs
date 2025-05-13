@@ -11,19 +11,32 @@ public sealed class PropertyRepository : IPropertyRepository
     #endregion
 
     #region implement
-    public async Task<IEnumerable<Property>> GetFilteredAsync(string name, string address, decimal? minPrice, decimal? maxPrice)
+    public async Task<IEnumerable<Property>> GetFilteredAsync(string name, string address, string? owner, decimal? maxPrice)
     {        
         var builder = Builders<Property>.Filter;
         var filter = builder.Empty;
-
+        
         if (!string.IsNullOrEmpty(name))
             filter &= builder.Regex(p => p.Name, new BsonRegularExpression(name, "i"));
-
+        
         if (!string.IsNullOrEmpty(address))
             filter &= builder.Regex(p => p.Address, new BsonRegularExpression(address, "i"));
 
-        if (minPrice.HasValue)
-            filter &= builder.Gte(p => p.Price, minPrice.Value);
+        if (!string.IsNullOrEmpty(owner))
+        {
+            var ownerMatch = await _context.Owners
+                .Find(Builders<Owner>.Filter.Regex(o => o.Name, new BsonRegularExpression(owner, "i")))
+                .FirstOrDefaultAsync();
+
+            if (ownerMatch != null)
+            {
+                filter &= builder.Eq(p => p.IdOwner, ownerMatch.IdOwner);
+            }
+            else
+            {
+                return new List<Property>();
+            }
+        }
 
         if (maxPrice.HasValue)
             filter &= builder.Lte(p => p.Price, maxPrice.Value);

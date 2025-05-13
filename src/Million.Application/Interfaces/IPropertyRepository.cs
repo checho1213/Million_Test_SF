@@ -4,7 +4,7 @@ public  interface IPropertyRepository
     Task<IEnumerable<Property>> GetFilteredAsync(
             string name,
             string address,
-            decimal? minPrice,
+            string? owner,
             decimal? maxPrice
         );
 }
